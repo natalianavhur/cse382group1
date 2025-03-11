@@ -1,5 +1,16 @@
-# cse382group1
+# Overview
 
-Set up for our product
 
-To set up your own versions/do work on the product make a fork of the main project
+
+# Development Environment
+
+Programming Languages: Erlang
+
+# Useful Websites
+
+- [Website Name](https://www.bea.gov/)
+
+
+# Future Work
+
+- Future Work
