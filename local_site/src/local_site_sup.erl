@@ -11,10 +11,10 @@
 
 -export([init/1]).
 
--define(SERVER, ?MODULE).
+% -define(SERVER, ?MODULE).
 
 start_link() ->
-    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% sup_flags() = #{strategy => strategy(),         % optional
 %%                 intensity => non_neg_integer(), % optional
@@ -26,12 +26,27 @@ start_link() ->
 %%                  type => worker(),       % optional
 %%                  modules => modules()}   % optional
 init([]) ->
-    SupFlags = #{
-        strategy => one_for_all,
-        intensity => 0,
-        period => 1
-    },
-    ChildSpecs = [],
-    {ok, {SupFlags, ChildSpecs}}.
+    %% Child #1: The sensor supervisor
+    SensorSup = {sensor_sup,
+                 {sensor_sup, start_link, []},
+                 permanent,
+                 5000,
+                 supervisor,
+                 [sensor_sup]},
+
+    %% Here you could define other children like:
+    %%   hvac_controller, local_alerts, mqtt_publisher, etc.
+
+    %% For example (placeholder):
+    %% HvacController = {hvac_controller, {hvac_controller, start_link, []},
+    %%                   permanent, 5000, worker, [hvac_controller]},
+    Children = [
+        SensorSup
+        %% , HvacController, ...
+    ],
+
+    %% We choose a one_for_one strategy so that if one child process
+    %% fails, only that process is restarted.
+    {ok, {{one_for_one, 5, 10}, Children}}.
 
 %% internal functions
